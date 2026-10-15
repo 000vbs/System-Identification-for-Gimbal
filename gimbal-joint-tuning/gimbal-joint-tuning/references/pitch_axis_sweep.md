@@ -12,6 +12,8 @@ Yaw 轴无重力、无限位，所以"给力矩就能摆动"。Pitch 完全不�
 | `sweep_ol_pitch_gC` | 重力补偿常量偏置 (N·m) |
 | `sweep_ol_pitch_torque_limit` | **Pitch 开环扫频总力矩限幅 (N·m)，默认 3.0**；填 0 或负值关闭 |
 | `sweep_ol_pitch_clip_ticks` | 本轮被限幅的周期数；**非 0 说明限幅咬住**（多半是 gC 填太大） |
+| `sweep_ol_excursion_limit` | **角度限幅（两轴通用）**：相对本轮起点的云台侧摆幅上限，默认 1.5 rad，0=关闭 |
+| `sweep_ol_fault` | 停止原因：1=配置越界，**2=超出角度限幅**（此时 `state=3`、力矩已归零） |
 | `sweep_ol_u_total` | 实际施加的总力矩 = 正弦 + 重力补偿，Ozone 直接可读 |
 
 补偿形式：`τ_bias = gA·cos(θ_imu − gPhi) + gC`（刚性臂的重力力矩就是这个形状）。
