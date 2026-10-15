@@ -1,3 +1,0 @@
-interface:
-  display_name: "Gimbal Joint Tuning"
-  short_description: "关节辨识与 PID 整定：开环扫频辨识、按相位裕度设计、摩擦前馈、实机阶跃验证"
