@@ -64,3 +64,11 @@ force_sys_id_axis = 2        # 2 = Pitch（1 = Yaw）
 2. 在 3~4 个角度重复，得到 (θ, τ) 点，拟合 `τ = gA·cos(θ − gPhi) + gC`；
 3. 填回三个量后手动验证：轻推应"发软"但不自己滑到限位（有静摩擦死区，别只看它停在哪）。
 4. 补偿项等效于负刚度（`gA·cos(θ)` 的导数是 `−gA·sin θ`）：做增量辨识用 `sweep_ol_u`（纯正弦）当输入更干净，要建"实际系统"就用 `sweep_ol_u_total`；两个量都记录了。
+
+## 实机案例
+
+本工程 Pitch 轴的完整结果、原始 CSV、MATLAB 辨识/阶跃拟合脚本和实机验证图见：
+
+[`../../pitch-axis/README.md`](../../pitch-axis/README.md)
+
+已完成的 Pitch 开环扫频得到 `J=0.07008 kg·m²`、`b0=0.7784 N·m·s/rad`、`tau_c=0.9391 N·m`、`k=15.783 N·m/rad`、`Td=16.25 ms`，逐点中位误差 10.4%。固件中的摩擦前馈 `pitch_ff_tau_c=0.94` 即来自这组数据。
