@@ -243,28 +243,33 @@ c = +0.3031
 - 0.1 rad 瞬时阶跃；
 - 0.3 rad / 300 ms 斜坡。
 
-联合模型：
+最终模型显式包含位置保持力矩、静摩擦死区和回差：
 
 ```text
-J       = 0.040535 kg*m^2
-b0      = 0.16552  N*m*s/rad
-tau_c   = 2.24448  N*m
-kLow    = 9.930    N*m/rad  (0.15 rad 工作区)
-kHigh   = 42.635   N*m/rad  (0.30 rad 工作区)
-tau_act = 5.45 ms
+J       = 0.07008   kg*m^2      开环扫频
 Td      = 16.25 ms
+tau_act = 5.45 ms
+b0      = 1.71536   N*m*s/rad
+Fc      = 0.95263   N*m         动能摩擦
+Fs      = 1.14636   N*m         静摩擦起动阈值
+wS      = 0.00200   rad/s
+bH      = 0.02197   rad = 1.259 deg
+kHold   = 1.68235
 ```
 
-注意：阶跃拟合出的 `tau_c=2.24 N*m` 不能覆盖开环扫频得到的 `0.939 N*m`。阶跃中的静摩擦、粘滑释放和位置相关负载会把等效摩擦抬高；动态参数优先相信开环扫频。
+保持力矩 `H(theta)` 来自 19 点全行程静态标定表。原始表在中间段有非单调凹坑，先做单调化，再用 PCHIP 插值，避免局部负刚度。
 
-拟合误差：
+最终三工况误差：
 
-| 数据段 | NRMSE | R² |
-| --- | ---: | ---: |
-| 0.1 rad 瞬时阶跃 | 6.39% | 0.971 |
-| 0.3 rad / 300 ms 斜坡 | 2.94% | 0.995 |
-| 修复前 0.07 rad | 18.59% | 0.694 |
-| 修复后 0.07 rad | 9.34% | 0.952 |
+| 数据段 | 角度 NRMSE | 角速度 NRMSE | 力矩 NRMSE |
+| --- | ---: | ---: | ---: |
+| 修复后 0.07 rad | 5.7% | 11.9% | 9.6% |
+| 0.1 rad 瞬时阶跃 | 7.6% | 8.4% | 10.4% |
+| 0.3 rad / 300 ms 斜坡 | 2.2% | 7.1% | 33.0% |
+
+单独用阶跃数据拟合得到的 `J=0.040535, b0=0.16552, tau_c=2.24448` 是诊断模型，不是最终模型。它在单次 0.07 rad 上可以拟合到 1.52%，但没有显式静摩擦/回差，跨工况泛化较差。
+
+![最终显式模型三工况对比](pitch-axis/figures/pitch_three_steps_angle_vel_torque_261019.png)
 
 ### 4.4 实机参数与结果
 
@@ -326,7 +331,9 @@ Pitch 脚本位于 [`pitch-axis/matlab/`](pitch-axis/matlab/)：
 | --- | --- |
 | `pitch_ident_261018.m` | 开环扫频质量审查、灰箱 LS、延迟扫描、留一验证 |
 | `analyze_pitch_angle_sweep_261019.m` | 闭环角度扫频 Bode |
-| `pitch_step_all_csv_joint_fit_261019.m` | 自动去重并联合拟合全部阶跃 |
+| `pitch_step_all_csv_joint_fit_261019.m` | 自动去重并拟合阶跃诊断模型 |
+| `pitch_explicit_hold_friction_backlash_261019.m` | 静态保持表、静摩擦死区、回差/滞回模型 |
+| `pitch_three_steps_angle_vel_torque_261019.m` | 三工况角度/角速度/力矩最终对比图 |
 | `pitch_multi_fit_261019.m` | 0.1/0.3 rad 局部植物拟合 |
 | `pitch_static_cal_261018.m` | 静态保持力矩拟合模板 |
 | `pitch_closed_loop_sim_261018.m` | 1 ms 非线性串级 PID 仿真 |

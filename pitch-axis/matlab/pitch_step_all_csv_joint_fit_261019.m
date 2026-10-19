@@ -2,6 +2,8 @@
 % 识别方式：以实测力矩作为植物输入，联合拟合 J、b0、tau_c 和两个工作区的局部刚度。
 % 同一段阶跃若因采样变量不同而出现在多个 CSV 中，会自动去重。
 % 多幅值回中段因静摩擦死区不参与辨识，避免把零速保持误差算进动态参数。
+% 注意：本脚本输出的是“仅用阶跃数据”的诊断模型，不是最终模型。
+% 最终模型见 pitch_explicit_hold_friction_backlash_261019.m。
 clear; clc; close all;
 
 here = fileparts(mfilename('fullpath'));
